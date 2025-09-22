@@ -37,6 +37,175 @@ When asked to backup Memory Bank System files, you will copy the core context fi
 
 ## Project Overview
 
+## 🚀 Claude Code 飞书智能通知系统
+
+### 集成配置
+
+Claude Code 已集成智能飞书通知系统，能够自动从对话交互中提取任务信息并发送到飞书群。
+
+**飞书Webhook配置:**
+- Webhook URL: `https://www.feishu.cn/flow/api/trigger-webhook/e6704c788710bd238211e9d833129b49`
+- 格式: 飞书自动化流程标准JSON格式
+
+### 使用方法
+
+#### 方法1: 智能对话分析（推荐）
+
+```python
+# 导入智能分析模块
+import sys
+sys.path.append("G:/AGI/message-pusher")
+
+from claude_auto_summarizer import send_conversation_summary
+
+# 在任务完成时调用
+user_input = "用户的原始请求"
+claude_output = "Claude的完整回应"
+
+send_conversation_summary(user_input, claude_output)
+```
+
+#### 方法2: 手动通知
+
+```python
+import sys
+sys.path.append("G:/AGI/message-pusher")
+
+from claude_notify_final import send_claude_notification
+
+send_claude_notification(
+    task_name="任务名称",
+    status="success",  # success|failed|running
+    result="任务结果描述",
+    task_type="Custom",  # Custom|Bash|Write|Edit
+    duration_sec=30
+)
+```
+
+#### 方法3: 命令行调用
+
+```bash
+# 智能分析方式
+python "G:/AGI/message-pusher/claude_auto_summarizer.py" "用户输入" "Claude输出"
+
+# 手动指定方式
+python "G:/AGI/message-pusher/claude_notify_final.py" "任务名" "success" "结果" "Custom" 30
+```
+
+### 通用集成函数
+
+```python
+def notify_claude_task_completion(task_description, output_summary="", status="success"):
+    """通用的Claude Code任务完成通知函数"""
+    import sys, os
+
+    notify_path = os.environ.get("CLAUDE_NOTIFY_PATH", "G:/AGI/message-pusher")
+    sys.path.append(notify_path)
+
+    try:
+        from claude_auto_summarizer import send_conversation_summary
+        send_conversation_summary(task_description, output_summary)
+    except ImportError:
+        print("Claude通知系统未找到，请检查路径配置")
+    except Exception as e:
+        print(f"发送Claude通知失败: {e}")
+
+# 在任何Claude Code脚本末尾添加：
+notify_claude_task_completion(
+    "当前脚本执行的任务描述",
+    "脚本执行的结果和输出摘要"
+)
+```
+
+## 📱 VS Code 集成配置
+
+### VS Code 增强设置
+
+基于 Anthony's VS Code Settings 优化的 Claude Code 专用配置：
+
+```json
+{
+  // Claude Code 集成设置
+  "claude.code.integration.enabled": true,
+  "claude.notification.feishu.enabled": true,
+  "claude.notification.webhook": "https://www.feishu.cn/flow/api/trigger-webhook/e6704c788710bd238211e9d833129b49",
+  "claude.tasks.auto.notify": true,
+  "claude.debug.verbose": false,
+  "claude.workspace.detection": true,
+
+  // 基于Anthony's优化的开发环境
+  "workbench.colorTheme": "Vitesse Dark",
+  "editor.fontFamily": "Input Mono, monospace",
+  "workbench.iconTheme": "catppuccin-mocha",
+  "workbench.productIconTheme": "icons-carbon",
+  "workbench.sideBar.location": "right",
+
+  // ESLint 配置 (antfu/eslint-config)
+  "eslint.quiet": true,
+  "eslint.validate": ["javascript", "typescript", "vue", "markdown", "json"],
+
+  // 开发效率提升
+  "editor.inlineSuggest.enabled": true,
+  "editor.stickyScroll.enabled": true,
+  "github.copilot.enable": { "*": true, "markdown": true },
+  "explorer.fileNesting.enabled": true
+}
+```
+
+### VS Code 代码片段
+
+Claude Code 专用代码片段，支持快速插入通知代码：
+
+| 快捷键 | 功能 | 描述 |
+|--------|------|------|
+| `cn` | 智能通知 | 快速插入智能对话分析通知 |
+| `cnm` | 手动通知 | 手动指定状态和结果的通知 |
+| `cnf` | 助手函数 | 通用的Claude通知助手函数 |
+
+### 推荐扩展 (27个精选)
+
+基于 Anthony Fu 的扩展配置：
+
+**核心开发工具:**
+- `antfu.vite` - Vite 集成
+- `Vue.volar` - Vue 3 支持
+- `dbaeumer.vscode-eslint` - ESLint 集成
+- `GitHub.copilot` - AI 代码助手
+
+**主题和视觉:**
+- `antfu.theme-vitesse` - Vitesse 主题
+- `Catppuccin.catppuccin-vsc-icons` - Catppuccin 图标
+- `antfu.icons-carbon` - Carbon 产品图标
+
+**质量和效率:**
+- `usernamehw.errorlens` - 错误高亮
+- `streetsidesoftware.code-spell-checker` - 拼写检查
+- `eamodio.gitlens` - Git 增强
+
+### VS Code 任务配置
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Claude: Test Feishu Notification",
+      "type": "shell",
+      "command": "python",
+      "args": ["path/to/test_feishu_notify.py"],
+      "group": "test"
+    },
+    {
+      "label": "Claude: Quick Notification Demo",
+      "type": "shell",
+      "command": "python",
+      "args": ["path/to/demo_claude_notification.py"],
+      "group": "test"
+    }
+  ]
+}
+```
+
 
 
 ## ALWAYS START WITH THESE COMMANDS FOR COMMON TASKS

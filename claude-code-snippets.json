@@ -1,0 +1,42 @@
+{
+  "claude-notify-smart": {
+    "scope": "python",
+    "prefix": "cn",
+    "body": [
+      "import sys",
+      "sys.path.append('G:/AGI/message-pusher')",
+      "from claude_auto_summarizer import send_conversation_summary",
+      "send_conversation_summary('$1', '$2')"
+    ],
+    "description": "Claude智能通知 (简洁版)"
+  },
+  "claude-notify-manual": {
+    "scope": "python",
+    "prefix": "cnm",
+    "body": [
+      "import sys",
+      "sys.path.append('G:/AGI/message-pusher')",
+      "from claude_notify_final import send_claude_notification",
+      "send_claude_notification('$1', '${2|success,failed,running|}', '$3', '${4|Custom,Bash,Write,Edit|}', ${5:30})"
+    ],
+    "description": "Claude手动通知"
+  },
+  "claude-helper-function": {
+    "scope": "python",
+    "prefix": "cnf",
+    "body": [
+      "def notify_claude_task_completion(task_description, output_summary='', status='success'):",
+      "    import sys",
+      "    sys.path.append('G:/AGI/message-pusher')",
+      "    try:",
+      "        from claude_auto_summarizer import send_conversation_summary",
+      "        return send_conversation_summary(task_description, output_summary)",
+      "    except Exception as e:",
+      "        print(f'Claude通知失败: {e}')",
+      "        return False",
+      "",
+      "notify_claude_task_completion('$1', '$2')"
+    ],
+    "description": "Claude通知助手函数"
+  }
+}
